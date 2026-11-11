@@ -50,7 +50,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0137e4ad38a2c8a46878d4176c9da7d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MoveScenario
-  speed: 30
+  camera: {fileID: 0}
+  speed: 50
 --- !u!1001 &691271687723321678
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -142,8 +143,9 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 6.103598, y: 7.5544286, z: 5.254108}
   m_Center: {x: -0.00002276898, y: 3.7772143, z: 0.016308192}
---- !u!1001 &3089625440383783295
-PrefabInstance:
+--- !u!1 &7741489798587067279
+GameObject:
+
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
