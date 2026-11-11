@@ -37,6 +37,8 @@ public class PlayerLaneMovement : MonoBehaviour
 
     private void ChangeLane(int direction)
     {
+        if(GameManager.Instance.GeneralSpeed == 0)
+            return;
         currentLane = Mathf.Clamp(
             currentLane + direction,
             0,
