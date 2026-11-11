@@ -281,6 +281,7 @@ MonoBehaviour:
   - {fileID: 1964341303422348300, guid: 9e87b6fc3e9062b438cce168ca3677c6, type: 3}
   - {fileID: 758063771094005846, guid: 291e8d195b673ca4d92d36e421a281b3, type: 3}
   - {fileID: 3377682457815085731, guid: 790b235d1c9f9254a91d7055fe0bc582, type: 3}
+  generacionesMinimasSinParadero: 5
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -595,6 +596,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Spawner
   Buildings: []
+  generacionesMinimasSinParadero: 5
 --- !u!4 &665378068 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4137600054744390167, guid: a9b7a3e10d90db443a06c7927c26f838, type: 3}
@@ -834,6 +836,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1450423310}
   - component: {fileID: 1450423309}
+  - component: {fileID: 1450423311}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -869,6 +872,27 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1450423311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1450423308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10a092978f3958142a8a92f1e0bf85b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ObstacleSpawner
+  obstaclePrefabs:
+  - {fileID: 6194305126835575054, guid: be449e57538ef194a99635565e1a408d, type: 3}
+  lanePoints:
+  - {fileID: 513424421}
+  - {fileID: 1774720760}
+  - {fileID: 665378068}
+  minSpawnInterval: 1.5
+  maxSpawnInterval: 3
+  spawnZ: 128.8
 --- !u!1 &1552804216
 GameObject:
   m_ObjectHideFlags: 0
