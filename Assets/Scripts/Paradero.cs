@@ -33,6 +33,7 @@ public class Paradero : MonoBehaviour
     {
         AsignarColorAleatorio();
         GenerarPasajerosAleatorios();
+        GameManager.Instance.AddDestiny(this);
     }
 
     void AsignarColorAleatorio()
