@@ -1,47 +1,90 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Collections;
 using UnityEngine;
 
 public class BusController : MonoBehaviour
 {
-    [Header("Estado de la Micro")]
-    public List<Pasajero> pasajerosABordo = new List<Pasajero>();
+    private BusPassengerController passengerController;
 
-    // Método para simular la llegada a un paradero (puedes llamarlo desde un OnTriggerEnter con el paradero)
+    private void Awake()
+    {
+        // Obtenemos el componente que gestiona los pasajeros en la misma micro
+        passengerController = GetComponent<BusPassengerController>();
+        if (passengerController == null)
+        {
+            Debug.LogError("Falta el componente BusPassengerController en la micro.");
+        }
+    }
+
+    // Método principal al llegar a un paradero
     public void LlegarAParadero(Paradero paraderoLlegada)
     {
         Debug.Log($"La micro llegó a un paradero de color: {paraderoLlegada.colorParadero}");
 
-        bool alguienSeBajaAqui = false;
+        bool accionRealizada = false;
 
-        // 1. Revisar pasajeros que quieren bajarse en este paradero
-        // Usamos una lista temporal para recorrer y remover sin romper el bucle
-        List<Pasajero> pasajerosABajar = pasajerosABordo.FindAll(p => p.colorDestino == paraderoLlegada.colorParadero);
-
-        if (pasajerosABajar.Count > 0)
+        // 1. REVISAR SI SE BAJAN PASAJEROS
+        // Verificamos si este paradero está en la lista de destinos del GameManager 
+        // o si hay pasajeros a bordo cuyo color de destino coincida con el paradero.
+        if (GameManager.Instance != null && GameManager.Instance.paraderosDestino.Contains(paraderoLlegada))
         {
-            alguienSeBajaAqui = true;
-            foreach (var pasajero in pasajerosABajar)
+            List<Pasajero> pasajerosABajar = passengerController.pasajerosABordo.FindAll(p => p.colorDestino == paraderoLlegada.colorParadero);
+
+            if (pasajerosABajar.Count > 0)
             {
-                pasajerosABordo.Remove(pasajero);
-                // Aquí destruirías el objeto visual del pasajero que bajó o lo liberarías
-                Destroy(pasajero.gameObject);
-                Debug.Log($"Un pasajero se bajó correctamente en el paradero {paraderoLlegada.colorParadero}.");
+                accionRealizada = true;
+                foreach (var pasajero in pasajerosABajar)
+                {
+                    passengerController.pasajerosABordo.Remove(pasajero);
+                    passengerController.pasajerosActuales = passengerController.pasajerosABordo.Count;
+
+                    // Destruimos el objeto visual del pasajero que bajó
+                    Destroy(pasajero.gameObject);
+                    Debug.Log($"Un pasajero se bajó correctamente en el paradero {paraderoLlegada.colorParadero}.");
+                }
             }
+
+            // Quitamos el paradero de la lista de destinos del GameManager ya que fue atendido
+            GameManager.Instance.paraderosDestino.Remove(paraderoLlegada);
         }
 
-        // 2. Subir nuevos pasajeros que estaban esperando en el paradero
-        List<Pasajero> nuevosPasajeros = paraderoLlegada.SubirPasajeros();
-        if (nuevosPasajeros.Count > 0)
+        // 2. SUBIR NUEVOS PASAJEROS DESDE EL PARADERO
+        Pasajero[] pasajerosEsperando = paraderoLlegada.GetComponentsInChildren<Pasajero>();
+
+        if (pasajerosEsperando.Length > 0)
         {
-            pasajerosABordo.AddRange(nuevosPasajeros);
-            alguienSeBajaAqui = true;
-            Debug.Log($"Se subieron {nuevosPasajeros.Count} grupos de pasajeros al bus.");
+            accionRealizada = true;
+
+            // Usamos un HashSet para almacenar los objetos padre (el EmptyObject del grupo) 
+            // y evitar borrarlos varias veces si el grupo tiene múltiples pasajeros dentro.
+            HashSet<GameObject> gruposPasajerosADestruir = new HashSet<GameObject>();
+
+            foreach (Pasajero nuevoPasajero in pasajerosEsperando)
+            {
+                // Lo añadimos al controlador de pasajeros del bus
+                passengerController.addPassengers(nuevoPasajero);
+
+                // Verificamos que el pasajero tenga un padre directo (el EmptyObject contenedor)
+                if (nuevoPasajero.transform.parent != null)
+                {
+                    // Agregamos el objeto padre inmediato a la lista para destruirlo después
+                    gruposPasajerosADestruir.Add(nuevoPasajero.transform.parent.gameObject);
+                }
+            }
+
+            // Destruimos únicamente el EmptyObject contenedor (el grupo) de cada uno
+            foreach (GameObject grupo in gruposPasajerosADestruir)
+            {
+                Destroy(grupo);
+            }
+
+            // Limpiamos la lista interna del paradero
+            paraderoLlegada.pasajerosEsperandoList.Clear();
+            Debug.Log($"Se subieron los pasajeros y se eliminó el grupo de espera del paradero.");
         }
 
-        // 3. Validación de parada inútil (nadie se bajaba ni subía / o específicamente si nadie se baja según tu regla)
-        if (!alguienSeBajaAqui)
+        // 3. VALIDACIÓN DE PARADA INÚTIL
+        if (!accionRealizada)
         {
             RestarPuntajePorParadaInnecesaria();
         }
@@ -55,41 +98,31 @@ public class BusController : MonoBehaviour
         // 2. Ejecuta la lógica de subida y bajada
         LlegarAParadero(paradero);
 
-        // 3. Espera los 2 segundos (la corrutina descansa aquí sin gastar recursos de Update)
+        // 3. Espera el tiempo de atención en el paradero (ej. 1 segundo)
         yield return new WaitForSeconds(1f);
 
         // 4. Devuelve la velocidad para que continúe la marcha
         GameManager.Instance.GeneralSpeed = 30;
-
-        // Al llegar aquí, la corrutina finaliza y Unity la elimina automáticamente de la memoria.
     }
+
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
         if (other.CompareTag("Stop"))
         {
-            Debug.Log("pico");
-            Paradero paradero = other.GetComponent<Paradero>();
-            Debug.Log("paradero: " + other.GetComponent<Paradero>().ToString());
-            if (paradero != null)
+            if (other.TryGetComponent<Paradero>(out Paradero paradero))
             {
                 StartCoroutine(SubirPasajeros(paradero));
             }
             else
             {
-                Debug.Log("ES NULLLLLLLLLLLLLLLL");
+                Debug.Log("El objeto con tag Stop no tiene el script Paradero.");
             }
-        }
-        else
-        {
-            Debug.Log("Nico marambio");
         }
     }
 
     void RestarPuntajePorParadaInnecesaria()
     {
-        // Por ahora un Debug.Log como pediste
-        Debug.Log("¡PENALIZACIÓN! La micro se detuvo en un paradero donde nadie se bajaba.");
-        // TODO: Aqui restarás puntos de tu GameManager en el futuro, ej: GameManager.Instance.RestarPuntos(10);
+        Debug.Log("¡PENALIZACIÓN! La micro se detuvo en un paradero donde nadie se bajaba ni subía.");
+        // GameManager.Instance.RestarPuntaje(10);
     }
 }

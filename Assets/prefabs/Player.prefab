@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1442055625879373192}
   - component: {fileID: 398664728408734360}
   - component: {fileID: 6694233535995639679}
+  - component: {fileID: 5117793342020892086}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -91,7 +92,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7970abd652b75ba47b1eae16f181cf83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BusController
-  pasajerosABordo: []
 --- !u!65 &398664728408734360
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -140,6 +140,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &5117793342020892086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 152625943638449367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9939d3e2f54c6549b310b33d3c25a25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BusPassengerController
+  pasajerosABordo: []
+  pasajerosActuales: 0
 --- !u!1 &3396423932833844893
 GameObject:
   m_ObjectHideFlags: 0
