@@ -32,15 +32,19 @@ public class GameManager : MonoBehaviour
 
     public void AddDestiny(Paradero p)
     {
-        BusPassengerController controller =  GetComponent<BusPassengerController>();
-        foreach (Pasajero pasajero in controller.pasajerosABordo)
+        BusPassengerController controller = FindObjectOfType<BusPassengerController>();
+
+        if (controller == null) return;
+
+        // Recorremos la lista usando 'DatosPasajero' en lugar de 'Pasajero'
+        foreach (DatosPasajero pasajero in controller.pasajerosABordo)
         {
             if (pasajero.colorDestino == p.colorParadero && !paraderosDestino.Contains(p))
             {
+                Debug.Log($"Agregando paradero de destino: {p.colorParadero}");
                 paraderosDestino.Add(p);
             }
         }
-        
     }
 
 }
