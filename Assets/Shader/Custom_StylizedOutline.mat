@@ -27,13 +27,13 @@ Material:
     m_Floats:
     - _FPS: 24
     - _FrameStep: 8
-    - _FromMax: 4
+    - _FromMax: 6.1
     - _FromMin: 0.24
     - _Lacunarity: 2
     - _NoiseScale: 1.3
-    - _Octaves: 3
+    - _Octaves: 2
     - _Roughness: 0.5
-    - _Thickness: 1
+    - _Thickness: 1.5
     - _ToMax: 1
     - _ToMin: 0
     m_Colors:
