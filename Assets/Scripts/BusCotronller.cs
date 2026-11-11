@@ -1,5 +1,6 @@
+using System.Collections;
 using System.Collections.Generic;
-
+using Unity.Collections;
 using UnityEngine;
 
 public class BusController : MonoBehaviour
@@ -46,6 +47,22 @@ public class BusController : MonoBehaviour
         }
     }
 
+    IEnumerator SubirPasajeros(Paradero paradero)
+    {
+        // 1. Frena la micro
+        GameManager.Instance.GeneralSpeed = 0;
+
+        // 2. Ejecuta la lógica de subida y bajada
+        LlegarAParadero(paradero);
+
+        // 3. Espera los 2 segundos (la corrutina descansa aquí sin gastar recursos de Update)
+        yield return new WaitForSeconds(1f);
+
+        // 4. Devuelve la velocidad para que continúe la marcha
+        GameManager.Instance.GeneralSpeed = 30;
+
+        // Al llegar aquí, la corrutina finaliza y Unity la elimina automáticamente de la memoria.
+    }
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
@@ -56,9 +73,7 @@ public class BusController : MonoBehaviour
             Debug.Log("paradero: " + other.GetComponent<Paradero>().ToString());
             if (paradero != null)
             {
-                GameManager.Instance.GeneralSpeed = 0;
-                
-                LlegarAParadero(paradero);
+                StartCoroutine(SubirPasajeros(paradero));
             }
             else
             {
