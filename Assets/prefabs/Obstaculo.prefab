@@ -67,6 +67,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: -8272866625954291134, guid: c87ba50ca26dde94b950acb3f2abca3b, type: 3}
+  - {fileID: 2100000, guid: 0dddd7b88160a31459ed4e9134c37b7a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -103,7 +104,7 @@ GameObject:
   - component: {fileID: 1967049814319764515}
   m_Layer: 0
   m_Name: Obstaculo
-  m_TagString: Untagged
+  m_TagString: Obstacle
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

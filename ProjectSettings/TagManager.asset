@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Destructor
   - Stop
+  - Obstacle
   layers:
   - Default
   - TransparentFX
