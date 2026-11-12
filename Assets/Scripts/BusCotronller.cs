@@ -140,7 +140,7 @@ public class BusController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Stop"))
+        if (other.CompareTag("Stop") && !GameManager.Instance.playerCollision.isDead)
         {
             if (other.TryGetComponent<Paradero>(out Paradero paradero))
             {
