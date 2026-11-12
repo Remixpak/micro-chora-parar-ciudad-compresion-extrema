@@ -729,7 +729,7 @@ PrefabInstance:
     - target: {fileID: 1442055625879373192, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
       propertyPath: FrenarSfx
       value: 
-      objectReference: {fileID: 8300000, guid: 97db65d1c72f1ad4fa7c6711cfaf5fbc, type: 3}
+      objectReference: {fileID: 8300000, guid: 1056524049118a34295e8dc7e68d3282, type: 3}
     - target: {fileID: 1442055625879373192, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
       propertyPath: SubirPasajeroSfx.Array.size
       value: 3
@@ -1364,7 +1364,10 @@ MonoBehaviour:
   musicSource: {fileID: 1450423312}
   sfxSource: {fileID: 1450423311}
   frenoSource: {fileID: 1450423314}
-  playlistMusica: []
+  playlistMusica:
+  - {fileID: 8300000, guid: 99c3f77a823072440bd3ff3a1c12c3b9, type: 3}
+  - {fileID: 8300000, guid: c11ebd920581f9c4b831fb92a8da04a8, type: 3}
+  - {fileID: 8300000, guid: d33c5c25bd7a0c84dbca8a471860e72b, type: 3}
 --- !u!82 &1450423314
 AudioSource:
   m_ObjectHideFlags: 0
