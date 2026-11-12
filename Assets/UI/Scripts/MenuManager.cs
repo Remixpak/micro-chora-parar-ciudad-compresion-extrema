@@ -85,15 +85,4 @@ public class MenuManager : MonoBehaviour
         Debug.Log("Salio del juego");
     }
 
-    public void ButtonContinue()
-    {
-
-    }
-
-    public void ButtonQuitMenu()
-    {
-        SceneManager.LoadScene("Menu Inicial");
-    }
-
-
 }

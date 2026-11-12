@@ -200,6 +200,12 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
+
+    public void BackToMenu()
+    {
+        SceneManager.LoadScene("Menu Inicial");
+    }
+
     public void GameOver()
     {
         
