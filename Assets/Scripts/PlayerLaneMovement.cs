@@ -18,7 +18,7 @@ public class PlayerLaneMovement : MonoBehaviour
     private void Update()
     {
         // Si la micro está detenida en un paradero, pausamos la animación y no permitimos cambiar de carril
-        if (GameManager.Instance.GeneralSpeed == 0)
+        if (GameManager.Instance.GeneralSpeed == 0 || GameManager.Instance.playerCollision.isDead)
         {
             if (playerAnimator != null) playerAnimator.speed = 0f;
             return;

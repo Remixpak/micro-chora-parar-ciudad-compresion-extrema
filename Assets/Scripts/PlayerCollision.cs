@@ -4,15 +4,18 @@ public class PlayerCollision : MonoBehaviour
 {
     [Header("Estado del jugador")]
     [SerializeField] private bool hasShield = false;
+    public float velocidadRotacion = 360f;
     [SerializeField] private GameObject shieldVisual;
 
     [SerializeField] private BusVFXController busVFX;
 
     public bool TieneEscudo => hasShield;
 
-    private bool isDead = false;
+    public bool isDead = false;
 
     public bool EstaMuerto => isDead;
+    
+
 
     private void Start()
     {
@@ -29,6 +32,15 @@ public class PlayerCollision : MonoBehaviour
         }
     }
 
+
+    private void Update()
+    {
+        // Si el jugador perdió, rota el objeto continuamente en el eje Y
+        if (isDead)
+        {
+            transform.Rotate(0f, velocidadRotacion * Time.deltaTime, 0f);
+        }
+    }
 
     private void ReceiveHit()
     {
@@ -52,7 +64,7 @@ public class PlayerCollision : MonoBehaviour
         if (busVFX != null)
             busVFX.PlayCollision();
 
-        GameOver();
+        GameManager.Instance.GameOver();
     }
 
     public void ActivateShield()
@@ -68,11 +80,11 @@ public class PlayerCollision : MonoBehaviour
         Debug.Log("¡Escudo activado!");
     }
 
-    private void GameOver()
+    /*private void GameOver()
     {
         isDead = true;
 
         Debug.Log("¡GAME OVER! La micro chocó con un obstáculo.");
 
-    }
+    }*/
 }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -29,7 +30,10 @@ public class GameManager : MonoBehaviour
     public AudioClip azulSfx;
     public AudioClip verdeSfx;
     public AudioClip amarilloSfx;
-
+    public PlayerCollision playerCollision;
+    [Header("Canvases")]
+    [SerializeField] private GameObject GameOverCanvas;
+    [SerializeField] private GameObject Pause;
     private void Awake()
     {
         if (Instance == null)
@@ -40,6 +44,7 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        playerCollision = FindFirstObjectByType<PlayerCollision>();
     }
 
 
@@ -190,5 +195,17 @@ public class GameManager : MonoBehaviour
             AudioManager.Instance.PlaySFX(audioSeleccionado);
             Debug.Log($"Reproduciendo sonido de parada aleatorio: {audioSeleccionado.name}");
         }
+    }
+    public void Reinciar()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    public void GameOver()
+    {
+        
+        playerCollision.isDead = true;
+        GameOverCanvas.gameObject.SetActive(true);
+        Debug.Log("¡GAME OVER! La micro chocó con un obstáculo.");
+
     }
 }
