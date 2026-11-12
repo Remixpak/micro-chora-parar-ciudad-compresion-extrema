@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class BusController : MonoBehaviour
 {
     private BusPassengerController passengerController;
+
     [Header("Sfx")]
     public AudioClip FrenarSfx;
     public List<AudioClip> SubirPasajeroSfx = new List<AudioClip>();
@@ -14,58 +15,120 @@ public class BusController : MonoBehaviour
     private void Awake()
     {
         passengerController = GetComponent<BusPassengerController>();
+
         if (passengerController == null)
         {
-            Debug.LogError("Falta el componente BusPassengerController en la micro.");
+            Debug.LogError(
+                "Falta el componente BusPassengerController en la micro."
+            );
         }
     }
 
     public void LlegarAParadero(Paradero paraderoLlegada)
     {
-        Debug.Log($"La micro lleg� a un paradero de color: {paraderoLlegada.colorParadero}");
+        if (paraderoLlegada == null || passengerController == null)
+            return;
+
+        Debug.Log(
+            $"La micro llegó a un paradero de color: {paraderoLlegada.colorParadero}"
+        );
 
         bool accionRealizada = false;
 
-        // 1. REVISAR SI SE BAJAN PASAJEROS
-        List<DatosPasajero> pasajerosABajar = passengerController.pasajerosABordo.FindAll(p => p.colorDestino == paraderoLlegada.colorParadero);
+        // 1. BAJAR PASAJEROS EN SU PARADERO CORRECTO
+
+        List<DatosPasajero> pasajerosABajar =
+            passengerController.pasajerosABordo.FindAll(
+                p => p.colorDestino == paraderoLlegada.colorParadero
+            );
 
         if (pasajerosABajar.Count > 0)
         {
             accionRealizada = true;
+
+            int cantidadBajada = 0;
+
+            foreach (DatosPasajero pasajero in pasajerosABajar)
+            {
+                cantidadBajada += pasajero.cantidadPersonas;
+            }
+
             passengerController.RemovePassengers(pasajerosABajar);
-            Debug.Log($"Se bajaron {pasajerosABajar.Count} pasajeros en el paradero {paraderoLlegada.colorParadero}.");
+
+            // +100 por realizar una entrega correcta.
+            if (ScoreManager.Instance != null)
+            {
+                ScoreManager.Instance.RegistrarEntrega();
+            }
+
+            Debug.Log(
+                $"Se bajaron {cantidadBajada} pasajeros. +100 puntos."
+            );
         }
 
-        // 2. SUBIR NUEVOS PASAJEROS DESDE EL PARADERO
-        Pasajero[] pasajerosEsperando = paraderoLlegada.GetComponentsInChildren<Pasajero>();
+        // 2. SUBIR NUEVOS PASAJEROS
+
+        Pasajero[] pasajerosEsperando =
+            paraderoLlegada.GetComponentsInChildren<Pasajero>();
 
         if (pasajerosEsperando.Length > 0)
         {
             accionRealizada = true;
-            HashSet<GameObject> gruposPasajerosADestruir = new HashSet<GameObject>();
+
+            HashSet<GameObject> gruposPasajerosADestruir =
+                new HashSet<GameObject>();
+
+            int totalPasajerosSubidos = 0;
 
             foreach (Pasajero nuevoPasajero in pasajerosEsperando)
             {
-                passengerController.addPassenger(nuevoPasajero.colorDestino, nuevoPasajero.cantidadPersonas);
+                int cantidad = nuevoPasajero.cantidadPersonas;
+
+                passengerController.addPassenger(
+                    nuevoPasajero.colorDestino,
+                    cantidad
+                );
+
+                totalPasajerosSubidos += cantidad;
+
+                // +100 por cada persona que sube.
+                if (ScoreManager.Instance != null)
+                {
+                    ScoreManager.Instance.RegistrarSubida(cantidad);
+                }
 
                 if (nuevoPasajero.transform.parent != null)
                 {
-                    gruposPasajerosADestruir.Add(nuevoPasajero.transform.parent.gameObject);
+                    gruposPasajerosADestruir.Add(
+                        nuevoPasajero.transform.parent.gameObject
+                    );
                 }
             }
 
             foreach (GameObject grupo in gruposPasajerosADestruir)
             {
-                if (grupo != null) Destroy(grupo);
+                if (grupo != null)
+                {
+                    Destroy(grupo);
+                }
             }
 
             paraderoLlegada.pasajerosEsperandoList.Clear();
-            Debug.Log("Nuevos pasajeros subidos a la micro y paradero despejado.");
 
-            // --- CORRECCI�N: Reproducimos el audio si la lista tiene elementos ---
-            if (SubirPasajeroSfx != null && SubirPasajeroSfx.Count > 0 && AudioManager.Instance != null)
+            Debug.Log(
+                $"Subieron {totalPasajerosSubidos} pasajeros. " +
+                $"+{totalPasajerosSubidos * 100} puntos."
+            );
+
+            // Reproducir audio de subida.
+            if (SubirPasajeroSfx != null &&
+                SubirPasajeroSfx.Count > 0 &&
+                AudioManager.Instance != null)
             {
-                AudioClip sfxSubir = SubirPasajeroSfx[Random.Range(0, SubirPasajeroSfx.Count)];
+                AudioClip sfxSubir = SubirPasajeroSfx[
+                    Random.Range(0, SubirPasajeroSfx.Count)
+                ];
+
                 if (sfxSubir != null)
                 {
                     AudioManager.Instance.PlaySFX(sfxSubir);
@@ -73,25 +136,33 @@ public class BusController : MonoBehaviour
             }
         }
 
-        // 3. VALIDACI�N DE PARADA IN�TIL
+        // 3. PENALIZAR PARADA INNECESARIA
+
         if (!accionRealizada)
         {
             RestarPuntajePorParadaInnecesaria();
         }
 
-        // RECALCULAMOS EL CANVAS GLOBALMENTE DESPU�S DE SUBIR/BAJAR
-        GameManager.Instance.ActualizarDestinosYCanvas();
-    }
+        // 4. ACTUALIZAR DESTINOS Y CANVAS
 
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.ActualizarDestinosYCanvas();
+        }
+    }
 
     private IEnumerator SubirPasajeros(Paradero paradero)
     {
         if (EstaAtendiendoParadero)
             yield break;
 
+        if (GameManager.Instance == null)
+            yield break;
+
         EstaAtendiendoParadero = true;
 
-        int velocidadAnterior = GameManager.Instance.GeneralSpeed;
+        int velocidadAnterior =
+            GameManager.Instance.GeneralSpeed;
 
         // Detener la micro.
         GameManager.Instance.GeneralSpeed = 0;
@@ -137,20 +208,37 @@ public class BusController : MonoBehaviour
         EstaAtendiendoParadero = false;
     }
 
-
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Stop") && !GameManager.Instance.playerCollision.isDead)
+        if (GameManager.Instance == null)
+            return;
+
+        if (GameManager.Instance.playerCollision.isDead)
+            return;
+
+        if (EstaAtendiendoParadero)
+            return;
+
+        if (other.CompareTag("Stop"))
         {
-            if (other.TryGetComponent<Paradero>(out Paradero paradero))
+            if (other.TryGetComponent<Paradero>(
+                out Paradero paradero))
             {
                 StartCoroutine(SubirPasajeros(paradero));
             }
         }
     }
 
-    void RestarPuntajePorParadaInnecesaria()
+    private void RestarPuntajePorParadaInnecesaria()
     {
-        Debug.Log("�PENALIZACI�N! La micro se detuvo en un paradero donde nadie se bajaba ni sub�a.");
+        // -100 por detenerse sin subir ni bajar pasajeros.
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.RegistrarParaderoIncorrecto();
+        }
+
+        Debug.Log(
+            "¡PENALIZACIÓN! Parada innecesaria: -100 puntos."
+        );
     }
 }

@@ -1,13 +1,19 @@
+
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class InterfaceManager : MonoBehaviour
 {
+    [Header("NÃºmeros personalizados")]
     [SerializeField] private Sprite[] spritesNumbers = new Sprite[10];
     [SerializeField] private Transform container;
 
+    [Header("Puntaje")]
     [SerializeField] private int currentScore = 0;
+
+    [Header("Referencias")]
+    [SerializeField] private ScoreManager scoreManager;
 
     private List<Image> digitImages = new List<Image>();
 
@@ -16,65 +22,116 @@ public class InterfaceManager : MonoBehaviour
         get => currentScore;
         set
         {
-            currentScore = Mathf.Max(0, value); // Evita puntajes negativos si no los deseas
+            currentScore = Mathf.Max(0, value);
             UpdateScoreUI();
         }
     }
 
-    void Start()
+
+    private void OnEnable()
     {
-        // Actualiza el score inicial al arrancar
+        // Si ya tenemos la referencia, nos suscribimos.
+        if (scoreManager != null)
+        {
+            scoreManager.OnScoreChanged += ActualizarPuntaje;
+            ActualizarPuntaje(scoreManager.PuntajeActual);
+        }
+    }
+
+    private void Start()
+    {
+        // Si no se asignÃ³ desde el Inspector,
+        // intentamos encontrarlo automÃ¡ticamente.
+        if (scoreManager == null)
+        {
+            scoreManager = ScoreManager.Instance;
+        }
+
+        if (scoreManager != null)
+        {
+            // Evita suscripciones duplicadas.
+            scoreManager.OnScoreChanged -= ActualizarPuntaje;
+            scoreManager.OnScoreChanged += ActualizarPuntaje;
+
+            ActualizarPuntaje(scoreManager.PuntajeActual);
+        }
+        else
+        {
+            Debug.LogError(
+                "InterfaceManager: No se encontrÃ³ ScoreManager."
+            );
+        }
+
         UpdateScoreUI();
     }
 
-    // Métodos públicos para modificar los puntos desde cualquier otro script
-    System.Collections.IEnumerator AddScore(int amount)
+    private void OnDisable()
     {
-        CurrentScore += amount;
-        yield return null;
+        if (scoreManager != null)
+        {
+            scoreManager.OnScoreChanged -= ActualizarPuntaje;
+        }
+    }
+
+
+    private void ActualizarPuntaje(int nuevoPuntaje)
+    {
+        CurrentScore = nuevoPuntaje;
     }
 
     public void ModifyScore(int amount)
     {
-        CurrentScore += amount;
+        if (ScoreManager.Instance != null)
+        {
+            if (amount >= 0)
+                ScoreManager.Instance.SumarPuntos(amount);
+            else
+                ScoreManager.Instance.RestarPuntos(-amount);
+        }
     }
 
     private void UpdateScoreUI()
     {
-        // Convertimos el número a string para separar cada dígito fácilmente
+        if (container == null)
+            return;
+
         string scoreString = currentScore.ToString();
 
-        // Asegurarnos de que tenemos suficientes componentes Image creados en pantalla
         while (digitImages.Count < scoreString.Length)
         {
-            GameObject digitObj = new GameObject("Digit", typeof(RectTransform), typeof(Image));
+            GameObject digitObj = new GameObject(
+                "Digit",
+                typeof(RectTransform),
+                typeof(Image)
+            );
+
             digitObj.transform.SetParent(container, false);
 
             Image img = digitObj.GetComponent<Image>();
-            img.preserveAspect = true; // Mantiene la proporción original de tus números hechos a mano
+            img.preserveAspect = true;
+
             digitImages.Add(img);
         }
 
-        // Activamos, desactivamos y asignamos el sprite correspondiente a cada dígito
         for (int i = 0; i < digitImages.Count; i++)
         {
             if (i < scoreString.Length)
             {
                 digitImages[i].gameObject.SetActive(true);
 
-                // Obtenemos el valor numérico del carácter (ej: '5' se convierte en el int 5)
                 int digitValue = scoreString[i] - '0';
 
-                if (digitValue >= 0 && digitValue < spritesNumbers.Length)
+                if (digitValue >= 0 &&
+                    digitValue < spritesNumbers.Length)
                 {
-                    digitImages[i].sprite = spritesNumbers[digitValue];
+                    digitImages[i].sprite =
+                        spritesNumbers[digitValue];
                 }
             }
             else
             {
-                // Si el número actual tiene menos dígitos que antes, ocultamos los sobrantes
                 digitImages[i].gameObject.SetActive(false);
             }
         }
     }
-}   
+}
