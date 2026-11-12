@@ -1,7 +1,8 @@
-using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.UI;
+using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -34,6 +35,8 @@ public class GameManager : MonoBehaviour
     [Header("Canvases")]
     [SerializeField] private GameObject GameOverCanvas;
     [SerializeField] private GameObject Pause;
+
+    private bool isPaused = false;
     private void Awake()
     {
         if (Instance == null)
@@ -75,6 +78,22 @@ public class GameManager : MonoBehaviour
                 $"¡La micro ha acelerado! Nueva velocidad: {GeneralSpeed}"
             );
         }
+
+        // Pausa
+        if (Keyboard.current != null && (Keyboard.current.escapeKey.wasPressedThisFrame || Keyboard.current.pKey.wasPressedThisFrame))
+        {
+            if (isPaused)
+            {
+                Reanudar();
+                
+            }
+            else
+            {
+                Pausar();
+                
+            }
+        }
+
     }
 
 
@@ -213,5 +232,21 @@ public class GameManager : MonoBehaviour
         GameOverCanvas.gameObject.SetActive(true);
         Debug.Log("¡GAME OVER! La micro chocó con un obstáculo.");
 
+    }
+
+    public void Pausar()
+    {
+        Pause.SetActive(true);
+        isPaused = true;
+        Time.timeScale = 0f; // Detiene el tiempo del juego (físicas, animaciones, etc.)
+        Debug.Log("Juego pausado");
+    }
+
+    public void Reanudar()
+    {
+        Pause.SetActive(false);
+        isPaused = false;
+        Time.timeScale = 1f; // Restaura el tiempo a la normalidad
+        Debug.Log("Juego reanudado");
     }
 }
