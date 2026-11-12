@@ -25,6 +25,7 @@ public class Paradero : MonoBehaviour
     [Header("Pasajeros esperando")]
     [Tooltip("Prefabs de pasajeros disponibles para este paradero")]
     public List<GameObject> prefabsPasajerosDisponibles;
+    public GameObject flecha;
 
     [HideInInspector]
     public List<Pasajero> pasajerosEsperandoList = new List<Pasajero>();
@@ -33,7 +34,23 @@ public class Paradero : MonoBehaviour
     {
         AsignarColorAleatorio();
         GenerarPasajerosAleatorios();
-        
+        switch (colorParadero)
+        {
+            case colorParadero.rojo:
+                flecha.GetComponent<SpriteRenderer>().color = Color.red;
+                break;
+            case colorParadero.azul:
+                flecha.GetComponent<SpriteRenderer>().color = Color.blue;
+                break;
+            case colorParadero.verde:
+                flecha.GetComponent<SpriteRenderer>().color = Color.green;
+                break;
+            case colorParadero.amarillo:
+                flecha.GetComponent<SpriteRenderer>().color = Color.yellow;
+                break;
+        }
+    
+
     }
 
     void AsignarColorAleatorio()
