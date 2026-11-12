@@ -72,33 +72,34 @@ public class Spawner : MonoBehaviour
     {
         while (true)
         {
-            // 1. Si la micro está detenida (GeneralSpeed == 0), pausamos todo aquí mismo
+            // 1. Si la micro está detenida, esperamos de forma limpia hasta que vuelva a moverse
             yield return new WaitUntil(() => GameManager.Instance.GeneralSpeed > 0);
 
             // 2. Instanciamos el edificio o paradero correspondiente
             Instantiate(SelectBuild(), new Vector3(10.9f, 0f, 128.8f), Quaternion.identity);
 
-            // 3. Calculamos el intervalo dinámico en función de la velocidad actual del GameManager
+            // 3. Calculamos el intervalo dinámico requerido según la velocidad actual
             float velocidadActual = GameManager.Instance.GeneralSpeed;
-
-            // Fórmula proporcional: si la velocidad sube, el intervalo de espera baja
             float intervaloDinamico = intervaloBase * (velocidadBase / velocidadActual);
-
-            // Evitamos que el intervalo sea menor a un límite seguro por rendimiento
             intervaloDinamico = Mathf.Max(intervaloDinamico, 0.05f);
 
             float tiempoTranscurrido = 0f;
 
+            // 4. Bucle de espera suave que escala el tiempo según la velocidad variable de la micro
             while (tiempoTranscurrido < intervaloDinamico)
             {
-                // Si durante la espera la micro frena, pausamos el contador de tiempo del spawn
-                if (GameManager.Instance.GeneralSpeed == 0)
+                float velocidadActualFrame = GameManager.Instance.GeneralSpeed;
+
+                // Si la micro está en 0 (parada en el andén), simplemente pausamos este frame sin romper el cálculo
+                if (velocidadActualFrame > 0)
                 {
-                    yield return new WaitUntil(() => GameManager.Instance.GeneralSpeed > 0);
+                    // Multiplicamos por un factor dinámico: si está acelerando (Lerp), 
+                    // el tiempo avanza proporcionalmente para evitar retrasos al arrancar.
+                    float factorAceleracion = velocidadActualFrame / velocidadBase;
+                    tiempoTranscurrido += Time.deltaTime * factorAceleracion;
                 }
 
-                tiempoTranscurrido += Time.deltaTime;
-                yield return null; // Espera al siguiente frame
+                yield return null;
             }
         }
     }
