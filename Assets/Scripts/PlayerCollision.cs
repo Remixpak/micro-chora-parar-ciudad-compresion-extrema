@@ -5,7 +5,6 @@ public class PlayerCollision : MonoBehaviour
     [Header("Estado del jugador")]
     [SerializeField] private bool hasShield = false;
     public float velocidadRotacion = 360f;
-    [SerializeField] private GameObject shieldVisual;
 
     [SerializeField] private BusVFXController busVFX;
 
@@ -19,8 +18,6 @@ public class PlayerCollision : MonoBehaviour
 
     private void Start()
     {
-        if (shieldVisual != null)
-            shieldVisual.SetActive(hasShield);
     }
     
     private void OnTriggerEnter(Collider other)
@@ -51,9 +48,6 @@ public class PlayerCollision : MonoBehaviour
         {
             hasShield = false;
 
-            if (shieldVisual != null)
-                shieldVisual.SetActive(false);
-
             if (busVFX != null)
                 busVFX.PlayShieldBreak();
 
@@ -73,9 +67,6 @@ public class PlayerCollision : MonoBehaviour
             return;
 
         hasShield = true;
-
-        if (shieldVisual != null)
-            shieldVisual.SetActive(true);
 
         Debug.Log("¡Escudo activado!");
     }
