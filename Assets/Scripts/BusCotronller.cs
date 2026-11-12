@@ -22,23 +22,13 @@ public class BusController : MonoBehaviour
         bool accionRealizada = false;
 
         // 1. REVISAR SI SE BAJAN PASAJEROS
-        if (GameManager.Instance != null && GameManager.Instance.paraderosDestino.Contains(paraderoLlegada))
+        List<DatosPasajero> pasajerosABajar = passengerController.pasajerosABordo.FindAll(p => p.colorDestino == paraderoLlegada.colorParadero);
+
+        if (pasajerosABajar.Count > 0)
         {
-            // Buscamos en la lista de datos los pasajeros cuyo destino coincida con el paradero
-            List<DatosPasajero> pasajerosABajar = passengerController.pasajerosABordo.FindAll(p => p.colorDestino == paraderoLlegada.colorParadero);
-
-            if (pasajerosABajar.Count > 0)
-            {
-                accionRealizada = true;
-
-                // Removemos los datos del controlador de la micro
-                passengerController.RemovePassengers(pasajerosABajar);
-
-                Debug.Log($"Se bajaron {pasajerosABajar.Count} pasajeros en el paradero {paraderoLlegada.colorParadero}.");
-            }
-
-            // Quitamos el paradero de la lista de destinos del GameManager
-            GameManager.Instance.paraderosDestino.Remove(paraderoLlegada);
+            accionRealizada = true;
+            passengerController.RemovePassengers(pasajerosABajar);
+            Debug.Log($"Se bajaron {pasajerosABajar.Count} pasajeros en el paradero {paraderoLlegada.colorParadero}.");
         }
 
         // 2. SUBIR NUEVOS PASAJEROS DESDE EL PARADERO
@@ -51,23 +41,17 @@ public class BusController : MonoBehaviour
 
             foreach (Pasajero nuevoPasajero in pasajerosEsperando)
             {
-                // Guardamos sus datos puros en la micro
                 passengerController.addPassenger(nuevoPasajero.colorDestino, nuevoPasajero.cantidadPersonas);
 
-                // Ubicamos el objeto contenedor (el grupo) para destruirlo visualmente del andén
                 if (nuevoPasajero.transform.parent != null)
                 {
                     gruposPasajerosADestruir.Add(nuevoPasajero.transform.parent.gameObject);
                 }
             }
 
-            // Destruimos el grupo visual del paradero
             foreach (GameObject grupo in gruposPasajerosADestruir)
             {
-                if (grupo != null)
-                {
-                    Destroy(grupo);
-                }
+                if (grupo != null) Destroy(grupo);
             }
 
             paraderoLlegada.pasajerosEsperandoList.Clear();
@@ -79,14 +63,45 @@ public class BusController : MonoBehaviour
         {
             RestarPuntajePorParadaInnecesaria();
         }
+
+        // RECALCULAMOS EL CANVAS GLOBALMENTE DESPUÉS DE SUBIR/BAJAR
+        GameManager.Instance.ActualizarDestinosYCanvas();
     }
 
     IEnumerator SubirPasajeros(Paradero paradero)
     {
+        // 1. Guardamos la velocidad exacta a la que iba antes de detenerse
+        int velocidadAnterior = GameManager.Instance.GeneralSpeed;
+
+        // 2. Frena la micro
         GameManager.Instance.GeneralSpeed = 0;
+
+        // 3. Ejecuta la lógica de subida y bajada
         LlegarAParadero(paradero);
+
+        // 4. Espera el tiempo de atención en el paradero (ej. 1 segundo)
         yield return new WaitForSeconds(1f);
-        GameManager.Instance.GeneralSpeed = 30;
+
+        // 5. Devolvemos la velocidad progresivamente hasta alcanzar la que tenía antes
+        float velocidadActualFlotante = 0f;
+        float tiempoAceleracion = 1f; // Tiempo que tardará en volver a su velocidad (en segundos)
+        float tiempoTranscurrido = 0f;
+
+        while (tiempoTranscurrido < tiempoAceleracion)
+        {
+            tiempoTranscurrido += Time.deltaTime;
+
+            // Interpola suavemente desde 0 hasta la velocidad anterior
+            velocidadActualFlotante = Mathf.Lerp(0f, velocidadAnterior, tiempoTranscurrido / tiempoAceleracion);
+
+            // Actualizamos la velocidad convirtiéndola a entero (asegurándonos de no pasar de 100 por el límite que pusimos antes)
+            GameManager.Instance.GeneralSpeed = Mathf.Min(Mathf.RoundToInt(velocidadActualFlotante), 100);
+
+            yield return null; // Espera al siguiente frame
+        }
+
+        // Nos aseguramos de fijar exactamente la velocidad anterior al terminar
+        GameManager.Instance.GeneralSpeed = Mathf.Min(velocidadAnterior, 100);
     }
 
     private void OnTriggerEnter(Collider other)
