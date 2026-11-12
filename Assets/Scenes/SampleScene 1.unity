@@ -614,6 +614,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 438313416783221571, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 3684216175523877753, guid: 108486dc8089cc343a5d881dc079bf90, type: 3}
+    - target: {fileID: 438313416783221571, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
+      propertyPath: 'm_BlendShapeWeights.Array.data[0]'
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 704110880127029057, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
       propertyPath: m_IsActive
       value: 0
@@ -674,6 +682,10 @@ PrefabInstance:
       propertyPath: 'lanePoints.Array.data[2]'
       value: 
       objectReference: {fileID: 665378068}
+    - target: {fileID: 5117793342020892086, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
+      propertyPath: nombreBlendShape
+      value: Hinchar
+      objectReference: {fileID: 0}
     - target: {fileID: 6456298795789109762, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
       propertyPath: hasShield
       value: 0
@@ -992,8 +1004,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e90a093d30612ba4098466cd825b8c7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  StopImage: {fileID: 0}
   paraderosDestino: []
   GeneralSpeed: 30
+  intervaloAceleracion: 30
+  incrementoVelocidad: 10
+  rojoSprite: {fileID: 0}
+  azulSprite: {fileID: 0}
+  verdeSprite: {fileID: 0}
+  amarilloSprite: {fileID: 0}
 --- !u!4 &1450423310
 Transform:
   m_ObjectHideFlags: 0
