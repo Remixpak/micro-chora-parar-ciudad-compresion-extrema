@@ -9,10 +9,13 @@ public class GameManager : MonoBehaviour
     public List<Paradero> paraderosDestino = new List<Paradero>();
     public int GeneralSpeed = 30;
 
-    [Header("Aceleración Progresiva")]
+    [Header("Aceleraciï¿½n Progresiva")]
     [SerializeField] private float intervaloAceleracion = 30f; // Segundos entre cada aumento
-    [SerializeField] private int incrementoVelocidad = 10;     // Cuánto aumenta la velocidad
+    [SerializeField] private int incrementoVelocidad = 10;     // Cuï¿½nto aumenta la velocidad
     private float temporizadorAceleracion = 0f;
+
+    [Header("Sistema de Power-ups"  )]
+    [SerializeField] private PowerUpManager powerUpManager;
 
     [Header("Imagenes de Paraderos")]
     [SerializeField] private Sprite rojoSprite;
@@ -39,25 +42,38 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
     private void Update()
     {
-        // Acumulamos el tiempo transcurrido
+        // No acelerar durante la selecciÃ³n ni su reanudaciÃ³n.
+        if (powerUpManager != null &&
+            powerUpManager.ControlandoVelocidad)
+        {
+            return;
+        }
+
+        // Tampoco acelerar mientras la micro estÃ¡ detenida.
+        if (GeneralSpeed <= 0)
+            return;
+
         temporizadorAceleracion += Time.deltaTime;
 
-        // Si pasan 30 segundos (o el intervalo configurado)
         if (temporizadorAceleracion >= intervaloAceleracion)
         {
             GeneralSpeed += incrementoVelocidad;
 
-            // Limitamos la velocidad para que no pase de 100
             GeneralSpeed = Mathf.Min(GeneralSpeed, 100);
 
-            temporizadorAceleracion = 0f; // Reiniciamos el temporizador
-            Debug.Log($"¡La micro ha acelerado! Nueva velocidad general: {GeneralSpeed}");
+            temporizadorAceleracion = 0f;
+
+            Debug.Log(
+                $"Â¡La micro ha acelerado! Nueva velocidad: {GeneralSpeed}"
+            );
         }
     }
 
-    // Método centralizado para evaluar pasajeros a bordo y paraderos activos en la escena
+
+    // Mï¿½todo centralizado para evaluar pasajeros a bordo y paraderos activos en la escena
     public void ActualizarDestinosYCanvas()
     {
         BusPassengerController controller = FindObjectOfType<BusPassengerController>();
@@ -66,7 +82,7 @@ public class GameManager : MonoBehaviour
         // Limpiamos la lista actual de destinos para recalcularla limpiamente
         paraderosDestino.Clear();
 
-        // Buscamos todos los paraderos que están vivos actualmente en la escena
+        // Buscamos todos los paraderos que estï¿½n vivos actualmente en la escena
         Paradero[] paraderosEnEscena = FindObjectsOfType<Paradero>();
 
         // Cruzamos los datos: Paraderos en escena vs Pasajeros a bordo
@@ -74,7 +90,7 @@ public class GameManager : MonoBehaviour
         {
             foreach (DatosPasajero pasajero in controller.pasajerosABordo)
             {
-                // Si el color del paradero coincide con el destino del pasajero y aún no está en la lista
+                // Si el color del paradero coincide con el destino del pasajero y aï¿½n no estï¿½ en la lista
                 if (pasajero.colorDestino == paradero.colorParadero && !paraderosDestino.Contains(paradero))
                 {
                     paraderosDestino.Add(paradero);
@@ -144,7 +160,7 @@ public class GameManager : MonoBehaviour
             if (spriteRenderer != null) spriteRenderer.sprite = spriteAAsignar;
             if (uiImage != null) uiImage.sprite = spriteAAsignar;
 
-            // --- SELECCIÓN ALEATORIA DE AUDIO (SFX del color o de la lista general) ---
+            // --- SELECCIï¿½N ALEATORIA DE AUDIO (SFX del color o de la lista general) ---
             ReproducirAudioAleatorioParada(sfxCorrespondiente);
         }
     }
@@ -161,7 +177,7 @@ public class GameManager : MonoBehaviour
 
         if (ClipsBajada != null && ClipsBajada.Count > 0)
         {
-            // Añadimos todos los clips de la lista general
+            // Aï¿½adimos todos los clips de la lista general
             audiosDisponibles.AddRange(ClipsBajada);
         }
 

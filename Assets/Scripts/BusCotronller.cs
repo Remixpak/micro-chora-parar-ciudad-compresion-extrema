@@ -9,6 +9,8 @@ public class BusController : MonoBehaviour
     public AudioClip FrenarSfx;
     public List<AudioClip> SubirPasajeroSfx = new List<AudioClip>();
 
+    public bool EstaAtendiendoParadero { get; private set; }
+
     private void Awake()
     {
         passengerController = GetComponent<BusPassengerController>();
@@ -20,7 +22,7 @@ public class BusController : MonoBehaviour
 
     public void LlegarAParadero(Paradero paraderoLlegada)
     {
-        Debug.Log($"La micro llegó a un paradero de color: {paraderoLlegada.colorParadero}");
+        Debug.Log($"La micro llegï¿½ a un paradero de color: {paraderoLlegada.colorParadero}");
 
         bool accionRealizada = false;
 
@@ -60,7 +62,7 @@ public class BusController : MonoBehaviour
             paraderoLlegada.pasajerosEsperandoList.Clear();
             Debug.Log("Nuevos pasajeros subidos a la micro y paradero despejado.");
 
-            // --- CORRECCIÓN: Reproducimos el audio si la lista tiene elementos ---
+            // --- CORRECCIï¿½N: Reproducimos el audio si la lista tiene elementos ---
             if (SubirPasajeroSfx != null && SubirPasajeroSfx.Count > 0 && AudioManager.Instance != null)
             {
                 AudioClip sfxSubir = SubirPasajeroSfx[Random.Range(0, SubirPasajeroSfx.Count)];
@@ -71,53 +73,70 @@ public class BusController : MonoBehaviour
             }
         }
 
-        // 3. VALIDACIÓN DE PARADA INÚTIL
+        // 3. VALIDACIï¿½N DE PARADA INï¿½TIL
         if (!accionRealizada)
         {
             RestarPuntajePorParadaInnecesaria();
         }
 
-        // RECALCULAMOS EL CANVAS GLOBALMENTE DESPUÉS DE SUBIR/BAJAR
+        // RECALCULAMOS EL CANVAS GLOBALMENTE DESPUï¿½S DE SUBIR/BAJAR
         GameManager.Instance.ActualizarDestinosYCanvas();
     }
 
-    IEnumerator SubirPasajeros(Paradero paradero)
+
+    private IEnumerator SubirPasajeros(Paradero paradero)
     {
-        // 1. Guardamos la velocidad exacta a la que iba antes de detenerse
+        if (EstaAtendiendoParadero)
+            yield break;
+
+        EstaAtendiendoParadero = true;
+
         int velocidadAnterior = GameManager.Instance.GeneralSpeed;
 
-        // 2. Frena la micro
+        // Detener la micro.
         GameManager.Instance.GeneralSpeed = 0;
-        if (velocidadAnterior > 40 && AudioManager.Instance != null && FrenarSfx != null)
-            AudioManager.Instance.PlayFreno(FrenarSfx);
 
-        // 3. Ejecuta la lógica de subida y bajada
+        if (velocidadAnterior > 40 &&
+            AudioManager.Instance != null &&
+            FrenarSfx != null)
+        {
+            AudioManager.Instance.PlayFreno(FrenarSfx);
+        }
+
         LlegarAParadero(paradero);
 
-        // 4. Espera el tiempo de atención en el paradero (ej. 1 segundo)
         yield return new WaitForSeconds(1f);
 
-        // 5. Devolvemos la velocidad progresivamente hasta alcanzar la que tenía antes
-        float velocidadActualFlotante = 0f;
-        float tiempoAceleracion = 1f; // Tiempo que tardará en volver a su velocidad (en segundos)
+        // Recuperar velocidad progresivamente.
+        float tiempoAceleracion = 1f;
         float tiempoTranscurrido = 0f;
 
         while (tiempoTranscurrido < tiempoAceleracion)
         {
             tiempoTranscurrido += Time.deltaTime;
 
-            // Interpola suavemente desde 0 hasta la velocidad anterior
-            velocidadActualFlotante = Mathf.Lerp(0f, velocidadAnterior, tiempoTranscurrido / tiempoAceleracion);
+            float velocidad = Mathf.Lerp(
+                0f,
+                velocidadAnterior,
+                Mathf.Clamp01(
+                    tiempoTranscurrido / tiempoAceleracion
+                )
+            );
 
-            // Actualizamos la velocidad convirtiéndola a entero
-            GameManager.Instance.GeneralSpeed = Mathf.Min(Mathf.RoundToInt(velocidadActualFlotante), 100);
+            GameManager.Instance.GeneralSpeed = Mathf.Min(
+                Mathf.RoundToInt(velocidad),
+                100
+            );
 
-            yield return null; // Espera al siguiente frame
+            yield return null;
         }
 
-        // Nos aseguramos de fijar exactamente la velocidad anterior al terminar
-        GameManager.Instance.GeneralSpeed = Mathf.Min(velocidadAnterior, 100);
+        GameManager.Instance.GeneralSpeed =
+            Mathf.Min(velocidadAnterior, 100);
+
+        EstaAtendiendoParadero = false;
     }
+
 
     private void OnTriggerEnter(Collider other)
     {
@@ -132,6 +151,6 @@ public class BusController : MonoBehaviour
 
     void RestarPuntajePorParadaInnecesaria()
     {
-        Debug.Log("¡PENALIZACIÓN! La micro se detuvo en un paradero donde nadie se bajaba ni subía.");
+        Debug.Log("ï¿½PENALIZACIï¿½N! La micro se detuvo en un paradero donde nadie se bajaba ni subï¿½a.");
     }
 }
