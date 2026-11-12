@@ -3973,6 +3973,7 @@ MonoBehaviour:
   - {fileID: 745121342}
   - {fileID: 1051190978}
   ButtonsMenuPause: []
+  PrincipalScene: SampleScene
 --- !u!4 &754082673
 Transform:
   m_ObjectHideFlags: 0

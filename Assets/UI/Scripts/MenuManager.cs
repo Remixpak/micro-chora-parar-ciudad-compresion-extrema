@@ -13,6 +13,8 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button[] ButtonsMenuInitial;
     [SerializeField] private Button[] ButtonsMenuPause;
 
+    [SerializeField] private string PrincipalScene;
+
     private GameObject LastButtonSelected;
 
     private void Start()
@@ -54,7 +56,10 @@ public class MenuManager : MonoBehaviour
     // Añadir nombre de la escena
     public void ButtonPlay()
     {
-        //SceneManager.LoadScene("Escena Principal");
+        if (PrincipalScene != null)
+        {
+            SceneManager.LoadScene(PrincipalScene);
+        }
         Debug.Log("Entrando a la Escena Principal");
     }
 
