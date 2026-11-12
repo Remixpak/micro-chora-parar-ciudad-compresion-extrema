@@ -5,7 +5,7 @@ using UnityEngine;
 public class BusController : MonoBehaviour
 {
     private BusPassengerController passengerController;
-
+    public AudioClip FrenarSfx;
     private void Awake()
     {
         passengerController = GetComponent<BusPassengerController>();
@@ -75,7 +75,7 @@ public class BusController : MonoBehaviour
 
         // 2. Frena la micro
         GameManager.Instance.GeneralSpeed = 0;
-
+        AudioManager.Instance.PlaySFX(FrenarSfx);
         // 3. Ejecuta la lógica de subida y bajada
         LlegarAParadero(paradero);
 
