@@ -1,3 +1,4 @@
+
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,55 +17,80 @@ public struct DatosPasajero
 
 public class BusPassengerController : MonoBehaviour
 {
-    [Header("Configuraci�n de Capacidad")]
-    [Tooltip("Capacidad m�xima de pasajeros. Puede modificarse mediante power-ups.")]
+    [Header("Configuración de Capacidad")]
+    [Tooltip("Capacidad máxima de pasajeros. Puede modificarse mediante power-ups.")]
     public int capacidadMaxima = 25;
 
-    [Header("Configuraci�n Visual (BlendShapes)")]
+    [Header("Configuración Visual (BlendShapes)")]
     [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer;
     [SerializeField] private string nombreBlendShape = "Clave 1";
+
     private int blendShapeIndex = -1;
 
-    // La lista almacena datos puros sin perder referencias
+    [Header("Pasajeros")]
     public List<DatosPasajero> pasajerosABordo = new List<DatosPasajero>();
     public int pasajerosActuales = 0;
 
+    private bool haExplotado = false;
+
+    public int PasajerosActuales => pasajerosActuales;
+    public int CapacidadMaxima => capacidadMaxima;
+
     private void Awake()
     {
-        // Buscamos el �ndice del BlendShape "Clave 1" autom�ticamente
-        if (skinnedMeshRenderer != null)
+        // Buscar el índice del BlendShape.
+        if (skinnedMeshRenderer != null &&
+            skinnedMeshRenderer.sharedMesh != null)
         {
-            blendShapeIndex = skinnedMeshRenderer.sharedMesh.GetBlendShapeIndex(nombreBlendShape);
+            blendShapeIndex = skinnedMeshRenderer.sharedMesh
+                .GetBlendShapeIndex(nombreBlendShape);
+
             if (blendShapeIndex == -1)
             {
-                Debug.LogWarning($"No se encontr� el BlendShape '{nombreBlendShape}' en el SkinnedMeshRenderer.");
+                Debug.LogWarning(
+                    $"No se encontró el BlendShape '{nombreBlendShape}'."
+                );
             }
         }
         else
         {
-            Debug.LogError("Falta asignar el SkinnedMeshRenderer en el Inspector.");
+            Debug.LogWarning(
+                "Falta asignar el SkinnedMeshRenderer o su malla."
+            );
         }
+
+        ActualizarConteoYBlendShape();
+        VerificarCapacidad();
     }
 
     public void addPassenger(colorParadero destino, int cantidad)
     {
+        if (haExplotado || cantidad <= 0)
+            return;
+
         pasajerosABordo.Add(new DatosPasajero(destino, cantidad));
+
         ActualizarConteoYBlendShape();
+        VerificarCapacidad();
     }
 
     public void RemovePassengers(List<DatosPasajero> aBajar)
     {
+        if (haExplotado || aBajar == null)
+            return;
+
         foreach (var pasajero in aBajar)
         {
             pasajerosABordo.Remove(pasajero);
         }
+
         ActualizarConteoYBlendShape();
     }
 
     private void ActualizarConteoYBlendShape()
     {
-        // Sumamos las personas reales a bordo (considerando grupos de 1, 3, 5, etc.)
         int totalPersonas = 0;
+
         foreach (var pasajero in pasajerosABordo)
         {
             totalPersonas += pasajero.cantidadPersonas;
@@ -72,17 +98,64 @@ public class BusPassengerController : MonoBehaviour
 
         pasajerosActuales = totalPersonas;
 
-        // Actualizamos el BlendShape de la micro (de 0 a 100)
-        if (skinnedMeshRenderer != null && blendShapeIndex != -1)
+        if (skinnedMeshRenderer != null &&
+            blendShapeIndex != -1 &&
+            capacidadMaxima > 0)
         {
-            // Calculamos el porcentaje en base a la capacidad m�xima actual
-            float porcentaje = ((float)pasajerosActuales / capacidadMaxima) * 100f;
+            float porcentaje =
+                ((float)pasajerosActuales / capacidadMaxima) * 100f;
 
-            // Limitamos el valor entre 0 y 100 por seguridad
             porcentaje = Mathf.Clamp(porcentaje, 0f, 100f);
 
-            // Aplicamos el peso al BlendShape "Clave 1"
-            skinnedMeshRenderer.SetBlendShapeWeight(blendShapeIndex, porcentaje);
+            skinnedMeshRenderer.SetBlendShapeWeight(
+                blendShapeIndex,
+                porcentaje
+            );
         }
+    }
+
+    private void VerificarCapacidad()
+    {
+        if (haExplotado)
+            return;
+
+        if (pasajerosActuales > capacidadMaxima)
+        {
+            ExplotarMicro();
+        }
+    }
+
+    // Método que llamará el power-up de capacidad.
+    public void AumentarCapacidadMaxima(int cantidadExtra)
+    {
+        if (haExplotado || cantidadExtra <= 0)
+            return;
+
+        capacidadMaxima += cantidadExtra;
+
+        // Recalcular la deformación según el nuevo límite.
+        ActualizarConteoYBlendShape();
+
+        Debug.Log(
+            $"¡Capacidad aumentada! Nuevo máximo: {capacidadMaxima}"
+        );
+    }
+
+    private void ExplotarMicro()
+    {
+        if (haExplotado)
+            return;
+
+        haExplotado = true;
+
+        Debug.LogError(
+            $"¡BOOM! La micro explotó por exceso de pasajeros. " +
+            $"Pasajeros: {pasajerosActuales}/{capacidadMaxima}"
+        );
+
+        // FUTURO:
+        // Reproducir animación de explosión.
+        // Activar partículas.
+        // Ejecutar Game Over.
     }
 }
