@@ -9,9 +9,9 @@ public class GameManager : MonoBehaviour
     public List<Paradero> paraderosDestino = new List<Paradero>();
     public int GeneralSpeed = 30;
 
-    [Header("Aceleración Progresiva")]
+    [Header("Aceleraciï¿½n Progresiva")]
     [SerializeField] private float intervaloAceleracion = 30f; // Segundos entre cada aumento
-    [SerializeField] private int incrementoVelocidad = 10;     // Cuánto aumenta la velocidad
+    [SerializeField] private int incrementoVelocidad = 10;     // Cuï¿½nto aumenta la velocidad
     private float temporizadorAceleracion = 0f;
 
     [Header("Imagenes de Paraderos")]
@@ -46,11 +46,11 @@ public class GameManager : MonoBehaviour
             GeneralSpeed = Mathf.Min(GeneralSpeed, 100);
 
             temporizadorAceleracion = 0f; // Reiniciamos el temporizador
-            Debug.Log($"¡La micro ha acelerado! Nueva velocidad general: {GeneralSpeed}");
+            Debug.Log($"ï¿½La micro ha acelerado! Nueva velocidad general: {GeneralSpeed}");
         }
     }
 
-    // Método centralizado para evaluar pasajeros a bordo y paraderos activos en la escena
+    // Mï¿½todo centralizado para evaluar pasajeros a bordo y paraderos activos en la escena
     public void ActualizarDestinosYCanvas()
     {
         BusPassengerController controller = FindObjectOfType<BusPassengerController>();
@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour
         // Limpiamos la lista actual de destinos para recalcularla limpiamente
         paraderosDestino.Clear();
 
-        // Buscamos todos los paraderos que están vivos actualmente en la escena
+        // Buscamos todos los paraderos que estï¿½n vivos actualmente en la escena
         Paradero[] paraderosEnEscena = FindObjectsOfType<Paradero>();
 
         // Cruzamos los datos: Paraderos en escena vs Pasajeros a bordo
@@ -67,7 +67,7 @@ public class GameManager : MonoBehaviour
         {
             foreach (DatosPasajero pasajero in controller.pasajerosABordo)
             {
-                // Si el color del paradero coincide con el destino del pasajero y aún no está en la lista
+                // Si el color del paradero coincide con el destino del pasajero y aï¿½n no estï¿½ en la lista
                 if (pasajero.colorDestino == paradero.colorParadero && !paraderosDestino.Contains(paradero))
                 {
                     paraderosDestino.Add(paradero);

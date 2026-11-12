@@ -84,7 +84,8 @@ MonoBehaviour:
   - {fileID: 0}
   currentLane: 1
   playerAnimator: {fileID: 2901296599657560729}
-  laneChangeSpeed: 10
+  laneChangeSpeed: 20
+  velocidadBase: 30
 --- !u!114 &1442055625879373192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97,6 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7970abd652b75ba47b1eae16f181cf83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BusController
+  FrenarSfx: {fileID: 8300000, guid: 97db65d1c72f1ad4fa7c6711cfaf5fbc, type: 3}
 --- !u!65 &398664728408734360
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -157,9 +159,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9939d3e2f54c6549b310b33d3c25a25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BusPassengerController
-  capacidadMaxima: 25
+  capacidadMaxima: 15
   skinnedMeshRenderer: {fileID: 438313416783221571}
-  nombreBlendShape: Clave 1
+  nombreBlendShape: Hinchar
   busVFX: {fileID: 2112989696620320236}
   pasajerosABordo: []
   pasajerosActuales: 0
@@ -175,7 +177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35cd02398cf72e04c858444166a00050, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCollision
-  hasShield: 0
+  hasShield: 1
   shieldVisual: {fileID: 704110880127029057}
   busVFX: {fileID: 2112989696620320236}
 --- !u!114 &2112989696620320236
@@ -195,6 +197,9 @@ MonoBehaviour:
   shieldBreakVFX: {fileID: 4883173911316470918, guid: cc0fba80a1616124b980b448027b68c9, type: 3}
   explosionPoint: {fileID: 3592180337530342117}
   collisionPoint: {fileID: 3592180337530342117}
+  explosionScale: 4
+  collisionScale: 4
+  shieldBreakScale: 4
   vfxLifetime: 3
 --- !u!1 &704110880127029057
 GameObject:
@@ -311,7 +316,7 @@ Transform:
   m_GameObject: {fileID: 2852913663289076591}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.85, z: -2.42}
+  m_LocalPosition: {x: 0, y: 0.85, z: -2.472}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -524,7 +529,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4298449241052230874
 Transform:
   m_ObjectHideFlags: 0
@@ -566,7 +571,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: 7b07f68b128133c47bfc67e9c3d05a41, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
