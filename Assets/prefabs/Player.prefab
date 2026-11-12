@@ -39,6 +39,7 @@ Transform:
   - {fileID: 3419530850854311167}
   - {fileID: 2052165718998265753}
   - {fileID: 4298449241052230874}
+  - {fileID: 6511420295694531269}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &2901296599657560729
@@ -348,7 +349,7 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 3684216175523877753, guid: d3efaccc48b6c0d4b888b4df0ee2422b, type: 3}
+  m_Mesh: {fileID: 3684216175523877753, guid: 108486dc8089cc343a5d881dc079bf90, type: 3}
   m_Bones:
   - {fileID: 8286708179773534556}
   - {fileID: 7076034703014846041}

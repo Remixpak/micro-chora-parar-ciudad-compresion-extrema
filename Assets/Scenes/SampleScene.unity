@@ -768,6 +768,10 @@ PrefabInstance:
       propertyPath: 'lanePoints.Array.data[2]'
       value: 
       objectReference: {fileID: 665378068}
+    - target: {fileID: 5117793342020892086, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
+      propertyPath: nombreBlendShape
+      value: Hinchar
+      objectReference: {fileID: 0}
     - target: {fileID: 7862393600276832657, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
       propertyPath: m_IsActive
       value: 0
