@@ -28,33 +28,35 @@ public class ObstacleSpawner : MonoBehaviour
     {
         while (true)
         {
-            // 1. Si la micro está detenida (GeneralSpeed == 0), pausamos la generación
+            // 1. Si la micro está detenida (GeneralSpeed == 0), esperamos limpiamente
             yield return new WaitUntil(() => GameManager.Instance.GeneralSpeed > 0);
 
-            // 2. Calculamos un intervalo base aleatorio entre los rangos configurados
+            // 2. Seleccionamos un intervalo base aleatorio dentro del rango configurado
             float intervaloBaseAleatorio = Random.Range(minSpawnInterval, maxSpawnInterval);
 
-            // 3. Ajustamos el intervalo inversamente proporcional a la velocidad actual del GameManager
-            float velocidadActual = GameManager.Instance.GeneralSpeed;
-            float interval = intervaloBaseAleatorio * (velocidadBase / velocidadActual);
+            float tiempoTranscurrido = 0f;
 
-            // Evitamos que el intervalo sea peligrosamente bajo
-            interval = Mathf.Max(interval, 0.2f);
-
-            float elapsed = 0f;
-
-            while (elapsed < interval)
+            // 3. Bucle de espera normalizado de 0 a 1 que se adapta en tiempo real a la velocidad variable
+            while (tiempoTranscurrido < 1f)
             {
-                // Si durante la espera la micro frena, pausamos el conteo del temporizador
-                if (GameManager.Instance.GeneralSpeed == 0)
+                float velocidadActual = GameManager.Instance.GeneralSpeed;
+
+                // Si la micro está en movimiento, calculamos el intervalo dinámico correspondiente a este frame
+                if (velocidadActual > 0)
                 {
-                    yield return new WaitUntil(() => GameManager.Instance.GeneralSpeed > 0);
+                    float intervaloDinamicoActual = intervaloBaseAleatorio * (velocidadBase / velocidadActual);
+
+                    // Límite de seguridad para evitar divisiones por cero o intervalos ultra-congelados
+                    intervaloDinamicoActual = Mathf.Max(intervaloDinamicoActual, 0.1f);
+
+                    // Avanzamos el progreso porcentualmente por cada frame
+                    tiempoTranscurrido += Time.deltaTime / intervaloDinamicoActual;
                 }
 
-                elapsed += Time.deltaTime;
                 yield return null;
             }
 
+            // 4. Al terminar el ciclo, spawneamos el obstáculo si la micro sigue en marcha
             if (GameManager.Instance.GeneralSpeed > 0)
             {
                 SpawnObstacle();
