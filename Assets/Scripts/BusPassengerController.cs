@@ -19,13 +19,24 @@ public class BusPassengerController : MonoBehaviour
 {
     [Header("Configuración de Capacidad")]
     [Tooltip("Capacidad máxima de pasajeros. Puede modificarse mediante power-ups.")]
-    public int capacidadMaxima = 25;
+    public int capacidadMaxima = 15;
 
     [Header("Configuración Visual (BlendShapes)")]
     [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer;
     [SerializeField] private string nombreBlendShape = "Clave 1";
 
     [SerializeField] private BusVFXController busVFX;
+
+    [Header("Power-ups")]
+    [SerializeField] private bool proteccionExplosion = false;
+
+    public const int CapacidadInicial = 15;
+    public const int LimiteCapacidad = 50;
+
+    public bool TieneProteccionExplosion => proteccionExplosion;
+    public bool EstaOperativa => !haExplotado;
+
+    public bool PuedeAumentarCapacidad => !haExplotado && capacidadMaxima < LimiteCapacidad;
 
     private int blendShapeIndex = -1;
 
@@ -116,33 +127,57 @@ public class BusPassengerController : MonoBehaviour
         }
     }
 
+   
     private void VerificarCapacidad()
     {
-        if (haExplotado)
+        if (haExplotado || pasajerosActuales <= capacidadMaxima)
             return;
 
-        if (pasajerosActuales > capacidadMaxima)
+        if (proteccionExplosion)
         {
-            ExplotarMicro();
+            proteccionExplosion = false;
+
+            // La explosión ocurre visualmente.
+            if (busVFX != null)
+                busVFX.PlayExplosion();
+
+            // Se pierden todos los pasajeros.
+            pasajerosABordo.Clear();
+
+            // Se conserva la capacidad máxima actual.
+            ActualizarConteoYBlendShape();
+
+            if (GameManager.Instance != null)
+                GameManager.Instance.ActualizarDestinosYCanvas();
+
+            Debug.Log(
+                "¡La micro sobrevivió a la explosión! " +
+                $"Capacidad conservada: {capacidadMaxima}"
+            );
+
+            return;
         }
+
+        // Sin protección, ocurre la explosión normal.
+        ExplotarMicro();
     }
 
     // Método que llamará el power-up de capacidad.
+
     public void AumentarCapacidadMaxima(int cantidadExtra)
     {
-        if (haExplotado || cantidadExtra <= 0)
+        if (!PuedeAumentarCapacidad || cantidadExtra <= 0)
             return;
 
-        capacidadMaxima += cantidadExtra;
+        capacidadMaxima = Mathf.Min(
+            capacidadMaxima + cantidadExtra,
+            LimiteCapacidad
+        );
 
-        // Recalcular la deformación según el nuevo límite.
         ActualizarConteoYBlendShape();
 
-        Debug.Log(
-            $"¡Capacidad aumentada! Nuevo máximo: {capacidadMaxima}"
-        );
+        Debug.Log($"Capacidad aumentada a {capacidadMaxima}");
     }
-
 
     private void ExplotarMicro()
     {
@@ -164,4 +199,34 @@ public class BusPassengerController : MonoBehaviour
         // FUTURO:
         // GameManager.Instance.GameOver();
     }
+
+
+    public void ActivarProteccionExplosion()
+    {
+        if (haExplotado)
+            return;
+
+        proteccionExplosion = true;
+
+        Debug.Log("¡Protección antiexplosión activada!");
+    }
+
+    public void VaciarMicro()
+    {
+        if (haExplotado)
+            return;
+
+        pasajerosABordo.Clear();
+
+        // Solo este power-up reinicia la capacidad.
+        capacidadMaxima = CapacidadInicial;
+
+        ActualizarConteoYBlendShape();
+
+        if (GameManager.Instance != null)
+            GameManager.Instance.ActualizarDestinosYCanvas();
+
+        Debug.Log("Micro vacía. Capacidad restaurada a 25.");
+    }
+
 }

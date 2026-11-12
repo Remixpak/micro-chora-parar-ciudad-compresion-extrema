@@ -14,6 +14,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int incrementoVelocidad = 10;     // Cu�nto aumenta la velocidad
     private float temporizadorAceleracion = 0f;
 
+    [Header("Sistema de Power-ups"  )]
+    [SerializeField] private PowerUpManager powerUpManager;
+
     [Header("Imagenes de Paraderos")]
     [SerializeField] private Sprite rojoSprite;
     [SerializeField] private Sprite azulSprite;
@@ -39,23 +42,36 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
     private void Update()
     {
-        // Acumulamos el tiempo transcurrido
+        // No acelerar durante la selección ni su reanudación.
+        if (powerUpManager != null &&
+            powerUpManager.ControlandoVelocidad)
+        {
+            return;
+        }
+
+        // Tampoco acelerar mientras la micro está detenida.
+        if (GeneralSpeed <= 0)
+            return;
+
         temporizadorAceleracion += Time.deltaTime;
 
-        // Si pasan 30 segundos (o el intervalo configurado)
         if (temporizadorAceleracion >= intervaloAceleracion)
         {
             GeneralSpeed += incrementoVelocidad;
 
-            // Limitamos la velocidad para que no pase de 100
             GeneralSpeed = Mathf.Min(GeneralSpeed, 100);
 
-            temporizadorAceleracion = 0f; // Reiniciamos el temporizador
-            Debug.Log($"�La micro ha acelerado! Nueva velocidad general: {GeneralSpeed}");
+            temporizadorAceleracion = 0f;
+
+            Debug.Log(
+                $"¡La micro ha acelerado! Nueva velocidad: {GeneralSpeed}"
+            );
         }
     }
+
 
     // M�todo centralizado para evaluar pasajeros a bordo y paraderos activos en la escena
     public void ActualizarDestinosYCanvas()
@@ -144,7 +160,7 @@ public class GameManager : MonoBehaviour
             if (spriteRenderer != null) spriteRenderer.sprite = spriteAAsignar;
             if (uiImage != null) uiImage.sprite = spriteAAsignar;
 
-            // --- SELECCI�N ALEATORIA DE AUDIO (SFX del color o de la lista general) ---
+            // --- SELECCI�N ALEATORIA DE AUDIO (SFX del color o de la lista general) ---
             ReproducirAudioAleatorioParada(sfxCorrespondiente);
         }
     }
@@ -161,7 +177,7 @@ public class GameManager : MonoBehaviour
 
         if (ClipsBajada != null && ClipsBajada.Count > 0)
         {
-            // A�adimos todos los clips de la lista general
+            // A�adimos todos los clips de la lista general
             audiosDisponibles.AddRange(ClipsBajada);
         }
 

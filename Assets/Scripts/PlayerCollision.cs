@@ -8,20 +8,18 @@ public class PlayerCollision : MonoBehaviour
 
     [SerializeField] private BusVFXController busVFX;
 
+    public bool TieneEscudo => hasShield;
 
     private bool isDead = false;
 
-    private void Update()
+    public bool EstaMuerto => isDead;
+
+    private void Start()
     {
-        if(hasShield)
-        {
-            shieldVisual.SetActive(true);
-        }
-        else
-        {
-            shieldVisual.SetActive(false);
-        }
+        if (shieldVisual != null)
+            shieldVisual.SetActive(hasShield);
     }
+    
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Obstacle"))
@@ -63,7 +61,10 @@ public class PlayerCollision : MonoBehaviour
             return;
 
         hasShield = true;
-        shieldVisual.SetActive(true);
+
+        if (shieldVisual != null)
+            shieldVisual.SetActive(true);
+
         Debug.Log("¡Escudo activado!");
     }
 
