@@ -11,15 +11,31 @@ public class MenuManager : MonoBehaviour
     //[SerializeField] private Button QuitButton;
 
     [SerializeField] private Button[] ButtonsMenuInitial;
-    [SerializeField] private Button[] ButtonsMenuPause;
+    [SerializeField] private Button[] ButtonsMenuPauseAndDeath;
 
     [SerializeField] private string PrincipalScene;
 
+    [SerializeField] private int ListOfButtons;
+
     private GameObject LastButtonSelected;
+
+    private Button[] Buttons;
 
     private void Start()
     {
-        foreach (Button button in ButtonsMenuInitial)
+        switch (ListOfButtons)
+        {
+            case 0: Buttons = ButtonsMenuInitial; break;
+
+            case 1: Buttons = ButtonsMenuPauseAndDeath; break;
+
+            default:
+                Buttons = new Button[0]; // Evita que sea null
+                Debug.LogWarning("ListOfButtons tiene un valor no válido.");
+                break;
+        }
+
+        foreach (Button button in Buttons)
         {
             //Animator animator = button.GetComponent<Animator>();
             
@@ -41,7 +57,7 @@ public class MenuManager : MonoBehaviour
 
     private void ActivateButton(Button buttonActive)
     {
-        foreach (Button button in ButtonsMenuInitial)
+        foreach (Button button in Buttons)
         {
             Animator animator = button.GetComponent<Animator>();
 
