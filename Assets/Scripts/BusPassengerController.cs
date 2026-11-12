@@ -1,7 +1,8 @@
 
+using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
-
 [System.Serializable]
 public struct DatosPasajero
 {
@@ -48,6 +49,8 @@ public class BusPassengerController : MonoBehaviour
 
     public int PasajerosActuales => pasajerosActuales;
     public int CapacidadMaxima => capacidadMaxima;
+
+    public GameObject CompresionPanel;
 
     private void Awake()
     {
@@ -127,12 +130,25 @@ public class BusPassengerController : MonoBehaviour
         }
     }
 
-   
+
     private void VerificarCapacidad()
     {
-        if (haExplotado || pasajerosActuales <= capacidadMaxima)
+        if (haExplotado)
             return;
 
+        // 1. Si estamos exactamente al límite de la capacidad
+        if (pasajerosActuales == capacidadMaxima)
+        {
+            Debug.Log("Activando panel por llegar al límite");
+            StartCoroutine(ActivarPanel());
+            return; // Salimos porque está lleno pero operativo
+        }
+
+        // 2. Si estamos por debajo de la capacidad, no hay problema
+        if (pasajerosActuales < capacidadMaxima)
+            return;
+
+        // 3. Si pasamos la capacidad máxima (pasajerosActuales > capacidadMaxima)
         if (proteccionExplosion)
         {
             proteccionExplosion = false;
@@ -158,7 +174,7 @@ public class BusPassengerController : MonoBehaviour
             return;
         }
 
-        // Sin protección, ocurre la explosión normal.
+        // Sin protección y superando el límite, ocurre la explosión normal.
         ExplotarMicro();
     }
 
@@ -196,8 +212,7 @@ public class BusPassengerController : MonoBehaviour
             busVFX.PlayExplosion();
         }
 
-        // FUTURO:
-        // GameManager.Instance.GameOver();
+        GameManager.Instance.GameOver();
     }
 
 
@@ -229,4 +244,13 @@ public class BusPassengerController : MonoBehaviour
         Debug.Log("Micro vacía. Capacidad restaurada a 25.");
     }
 
+    private IEnumerator ActivarPanel()
+    {
+        if (CompresionPanel != null)
+        {
+            CompresionPanel.SetActive(true);
+            yield return new WaitForSeconds(1.5f);
+            CompresionPanel.SetActive(false);
+        }
+    }
 }
