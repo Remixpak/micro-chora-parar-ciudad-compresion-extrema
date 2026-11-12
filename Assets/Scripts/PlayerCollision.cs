@@ -6,6 +6,9 @@ public class PlayerCollision : MonoBehaviour
     [SerializeField] private bool hasShield = false;
     [SerializeField] private GameObject shieldVisual;
 
+    [SerializeField] private BusVFXController busVFX;
+
+
     private bool isDead = false;
 
     private void Update()
@@ -28,6 +31,7 @@ public class PlayerCollision : MonoBehaviour
         }
     }
 
+
     private void ReceiveHit()
     {
         if (isDead)
@@ -36,11 +40,19 @@ public class PlayerCollision : MonoBehaviour
         if (hasShield)
         {
             hasShield = false;
-            shieldVisual.SetActive(false);
+
+            if (shieldVisual != null)
+                shieldVisual.SetActive(false);
+
+            if (busVFX != null)
+                busVFX.PlayShieldBreak();
 
             Debug.Log("¡El escudo protegió a la micro!");
             return;
         }
+
+        if (busVFX != null)
+            busVFX.PlayCollision();
 
         GameOver();
     }

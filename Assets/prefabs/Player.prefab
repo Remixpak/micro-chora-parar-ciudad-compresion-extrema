@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 6694233535995639679}
   - component: {fileID: 5117793342020892086}
   - component: {fileID: 6456298795789109762}
+  - component: {fileID: 2112989696620320236}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -40,6 +41,7 @@ Transform:
   - {fileID: 2052165718998265753}
   - {fileID: 4298449241052230874}
   - {fileID: 6511420295694531269}
+  - {fileID: 3592180337530342117}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &2901296599657560729
@@ -158,6 +160,7 @@ MonoBehaviour:
   capacidadMaxima: 25
   skinnedMeshRenderer: {fileID: 438313416783221571}
   nombreBlendShape: Clave 1
+  busVFX: {fileID: 2112989696620320236}
   pasajerosABordo: []
   pasajerosActuales: 0
 --- !u!114 &6456298795789109762
@@ -174,6 +177,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCollision
   hasShield: 0
   shieldVisual: {fileID: 704110880127029057}
+  busVFX: {fileID: 2112989696620320236}
+--- !u!114 &2112989696620320236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 152625943638449367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8d1f887ec96a484b96d9c4d240ca145, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BusVFXController
+  explosionVFX: {fileID: 3784945155588612436, guid: b33d991b542eaae4bb87332955c73ce0, type: 3}
+  collisionVFX: {fileID: 8367907410985086596, guid: 0b493b97a8e419d46903c1b023460740, type: 3}
+  shieldBreakVFX: {fileID: 4883173911316470918, guid: cc0fba80a1616124b980b448027b68c9, type: 3}
+  explosionPoint: {fileID: 3592180337530342117}
+  collisionPoint: {fileID: 3592180337530342117}
+  vfxLifetime: 3
 --- !u!1 &704110880127029057
 GameObject:
   m_ObjectHideFlags: 0
@@ -264,6 +286,37 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &2852913663289076591
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3592180337530342117}
+  m_Layer: 0
+  m_Name: VFXPosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3592180337530342117
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2852913663289076591}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.85, z: -2.42}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4379872304844063547}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3396423932833844893
 GameObject:
   m_ObjectHideFlags: 0

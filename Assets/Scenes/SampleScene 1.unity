@@ -757,6 +757,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4999495024304754992, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
+      propertyPath: laneChangeSpeed
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 4999495024304754992, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
       propertyPath: 'lanePoints.Array.data[0]'
       value: 
       objectReference: {fileID: 513424421}
@@ -768,6 +772,10 @@ PrefabInstance:
       propertyPath: 'lanePoints.Array.data[2]'
       value: 
       objectReference: {fileID: 665378068}
+    - target: {fileID: 5117793342020892086, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
+      propertyPath: capacidadMaxima
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 5117793342020892086, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
       propertyPath: nombreBlendShape
       value: Hinchar

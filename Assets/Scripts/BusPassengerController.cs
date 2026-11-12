@@ -25,6 +25,8 @@ public class BusPassengerController : MonoBehaviour
     [SerializeField] private SkinnedMeshRenderer skinnedMeshRenderer;
     [SerializeField] private string nombreBlendShape = "Clave 1";
 
+    [SerializeField] private BusVFXController busVFX;
+
     private int blendShapeIndex = -1;
 
     [Header("Pasajeros")]
@@ -141,6 +143,7 @@ public class BusPassengerController : MonoBehaviour
         );
     }
 
+
     private void ExplotarMicro()
     {
         if (haExplotado)
@@ -153,9 +156,12 @@ public class BusPassengerController : MonoBehaviour
             $"Pasajeros: {pasajerosActuales}/{capacidadMaxima}"
         );
 
+        if (busVFX != null)
+        {
+            busVFX.PlayExplosion();
+        }
+
         // FUTURO:
-        // Reproducir animación de explosión.
-        // Activar partículas.
-        // Ejecutar Game Over.
+        // GameManager.Instance.GameOver();
     }
 }
