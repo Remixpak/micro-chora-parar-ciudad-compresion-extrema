@@ -72,31 +72,28 @@ public class Spawner : MonoBehaviour
     {
         while (true)
         {
-            // 1. Si la micro está detenida, esperamos de forma limpia hasta que vuelva a moverse
+            // 1. Si la micro está detenida, esperamos limpiamente a que empiece a moverse
             yield return new WaitUntil(() => GameManager.Instance.GeneralSpeed > 0);
 
             // 2. Instanciamos el edificio o paradero correspondiente
             Instantiate(SelectBuild(), new Vector3(10.9f, 0f, 128.8f), Quaternion.identity);
 
-            // 3. Calculamos el intervalo dinámico requerido según la velocidad actual
-            float velocidadActual = GameManager.Instance.GeneralSpeed;
-            float intervaloDinamico = intervaloBase * (velocidadBase / velocidadActual);
-            intervaloDinamico = Mathf.Max(intervaloDinamico, 0.05f);
-
             float tiempoTranscurrido = 0f;
 
-            // 4. Bucle de espera suave que escala el tiempo según la velocidad variable de la micro
-            while (tiempoTranscurrido < intervaloDinamico)
+            // 3. Bucle de espera donde el tiempo objetivo se recalcula frame a frame según la velocidad actual
+            while (tiempoTranscurrido < 1f) // Usamos una proporción normalizada de 0 a 1
             {
-                float velocidadActualFrame = GameManager.Instance.GeneralSpeed;
+                float velocidadActual = GameManager.Instance.GeneralSpeed;
 
-                // Si la micro está en 0 (parada en el andén), simplemente pausamos este frame sin romper el cálculo
-                if (velocidadActualFrame > 0)
+                // Si la micro está detenida en el paradero, congelamos la cuenta sin romper el flujo
+                if (velocidadActual > 0)
                 {
-                    // Multiplicamos por un factor dinámico: si está acelerando (Lerp), 
-                    // el tiempo avanza proporcionalmente para evitar retrasos al arrancar.
-                    float factorAceleracion = velocidadActualFrame / velocidadBase;
-                    tiempoTranscurrido += Time.deltaTime * factorAceleracion;
+                    // Calculamos el intervalo que le corresponde exactamente A ESTE FRAME
+                    float intervaloDinamicoActual = intervaloBase * (velocidadBase / velocidadActual);
+                    intervaloDinamicoActual = Mathf.Max(intervaloDinamicoActual, 0.05f);
+
+                    // Avanzamos el progreso de forma proporcional al intervalo variable actual
+                    tiempoTranscurrido += Time.deltaTime / intervaloDinamicoActual;
                 }
 
                 yield return null;

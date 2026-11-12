@@ -9,6 +9,7 @@ public class AudioManager : MonoBehaviour
     [Header("Fuentes de Audio")]
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioSource frenoSource;
 
     [Header("Playlist de Música de Fondo")]
     [SerializeField] private List<AudioClip> playlistMusica = new List<AudioClip>();
@@ -94,13 +95,21 @@ public class AudioManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Reproduce un efecto de sonido (SFX) por un instante. 
-    /// Puede ser llamado desde cualquier otro script.
+    /// Reproduce un efecto de sonido (SFX). Si ya hay uno sonando, lo detiene para reproducir el nuevo de inmediato.
     /// </summary>
     public void PlaySFX(AudioClip sfxClip)
     {
         if (sfxClip == null) return;
 
-        sfxSource.PlayOneShot(sfxClip);
+        // Detenemos cualquier SFX que se esté reproduciendo actualmente
+        sfxSource.Stop();
+
+        // Asignamos el nuevo clip y lo reproducimos
+        sfxSource.clip = sfxClip;
+        sfxSource.Play();
+    }
+    public void PlayFreno(AudioClip sfx)
+    {
+        frenoSource.PlayOneShot(sfx);
     }
 }

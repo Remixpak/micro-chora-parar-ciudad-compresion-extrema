@@ -20,6 +20,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Sprite verdeSprite;
     [SerializeField] private Sprite amarilloSprite;
 
+    [Header("Sfx")]
+    public List<AudioClip> ClipsBajada = new List<AudioClip>();
+    public AudioClip rojoSfx;
+    public AudioClip azulSfx;
+    public AudioClip verdeSfx;
+    public AudioClip amarilloSfx;
+
     private void Awake()
     {
         if (Instance == null)
@@ -112,17 +119,60 @@ public class GameManager : MonoBehaviour
             var uiImage = StopImage.GetComponent<Image>();
 
             Sprite spriteAAsignar = null;
+            AudioClip sfxCorrespondiente = null;
 
             switch (paraderosDestino[0].colorParadero)
             {
-                case colorParadero.rojo: spriteAAsignar = rojoSprite; break;
-                case colorParadero.azul: spriteAAsignar = azulSprite; break;
-                case colorParadero.verde: spriteAAsignar = verdeSprite; break;
-                case colorParadero.amarillo: spriteAAsignar = amarilloSprite; break;
+                case colorParadero.rojo:
+                    spriteAAsignar = rojoSprite;
+                    sfxCorrespondiente = rojoSfx;
+                    break;
+                case colorParadero.azul:
+                    spriteAAsignar = azulSprite;
+                    sfxCorrespondiente = azulSfx;
+                    break;
+                case colorParadero.verde:
+                    spriteAAsignar = verdeSprite;
+                    sfxCorrespondiente = verdeSfx;
+                    break;
+                case colorParadero.amarillo:
+                    spriteAAsignar = amarilloSprite;
+                    sfxCorrespondiente = amarilloSfx;
+                    break;
             }
 
             if (spriteRenderer != null) spriteRenderer.sprite = spriteAAsignar;
             if (uiImage != null) uiImage.sprite = spriteAAsignar;
+
+            // --- SELECCIÓN ALEATORIA DE AUDIO (SFX del color o de la lista general) ---
+            ReproducirAudioAleatorioParada(sfxCorrespondiente);
+        }
+    }
+
+    private void ReproducirAudioAleatorioParada(AudioClip sfxColorEspecifico)
+    {
+        // Creamos una lista temporal que contenga el audio del color y todos los de la lista general
+        List<AudioClip> audiosDisponibles = new List<AudioClip>();
+
+        if (sfxColorEspecifico != null)
+        {
+            audiosDisponibles.Add(sfxColorEspecifico);
+        }
+
+        if (ClipsBajada != null && ClipsBajada.Count > 0)
+        {
+            // Añadimos todos los clips de la lista general
+            audiosDisponibles.AddRange(ClipsBajada);
+        }
+
+        // Si tenemos al menos un audio disponible, elegimos uno al azar y lo reproducimos mediante el AudioManager
+        if (audiosDisponibles.Count > 0 && AudioManager.Instance != null)
+        {
+            int indiceAleatorio = Random.Range(0, audiosDisponibles.Count);
+            AudioClip audioSeleccionado = audiosDisponibles[indiceAleatorio];
+
+            AudioManager.Instance.PlaySFX(audioSeleccionado);
+            Debug.Log($"Reproduciendo sonido de parada aleatorio: {audioSeleccionado.name}");
         }
     }
 }
