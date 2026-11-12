@@ -1,11 +1,14 @@
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class BusController : MonoBehaviour
 {
     private BusPassengerController passengerController;
+    [Header("Sfx")]
     public AudioClip FrenarSfx;
+    public List<AudioClip> SubirPasajeroSfx = new List<AudioClip>();
+
     private void Awake()
     {
         passengerController = GetComponent<BusPassengerController>();
@@ -56,6 +59,16 @@ public class BusController : MonoBehaviour
 
             paraderoLlegada.pasajerosEsperandoList.Clear();
             Debug.Log("Nuevos pasajeros subidos a la micro y paradero despejado.");
+
+            // --- CORRECCIÓN: Reproducimos el audio si la lista tiene elementos ---
+            if (SubirPasajeroSfx != null && SubirPasajeroSfx.Count > 0 && AudioManager.Instance != null)
+            {
+                AudioClip sfxSubir = SubirPasajeroSfx[Random.Range(0, SubirPasajeroSfx.Count)];
+                if (sfxSubir != null)
+                {
+                    AudioManager.Instance.PlaySFX(sfxSubir);
+                }
+            }
         }
 
         // 3. VALIDACIÓN DE PARADA INÚTIL
@@ -75,7 +88,9 @@ public class BusController : MonoBehaviour
 
         // 2. Frena la micro
         GameManager.Instance.GeneralSpeed = 0;
-        AudioManager.Instance.PlaySFX(FrenarSfx);
+        if (velocidadAnterior > 40 && AudioManager.Instance != null && FrenarSfx != null)
+            AudioManager.Instance.PlayFreno(FrenarSfx);
+
         // 3. Ejecuta la lógica de subida y bajada
         LlegarAParadero(paradero);
 
@@ -94,7 +109,7 @@ public class BusController : MonoBehaviour
             // Interpola suavemente desde 0 hasta la velocidad anterior
             velocidadActualFlotante = Mathf.Lerp(0f, velocidadAnterior, tiempoTranscurrido / tiempoAceleracion);
 
-            // Actualizamos la velocidad convirtiéndola a entero (asegurándonos de no pasar de 100 por el límite que pusimos antes)
+            // Actualizamos la velocidad convirtiéndola a entero
             GameManager.Instance.GeneralSpeed = Mathf.Min(Mathf.RoundToInt(velocidadActualFlotante), 100);
 
             yield return null; // Espera al siguiente frame

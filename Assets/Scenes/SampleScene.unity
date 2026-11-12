@@ -185,7 +185,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 1d6e4129d1d28f74f8acabe1efd8e699, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -730,6 +730,22 @@ PrefabInstance:
       propertyPath: FrenarSfx
       value: 
       objectReference: {fileID: 8300000, guid: 97db65d1c72f1ad4fa7c6711cfaf5fbc, type: 3}
+    - target: {fileID: 1442055625879373192, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
+      propertyPath: SubirPasajeroSfx.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1442055625879373192, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
+      propertyPath: 'SubirPasajeroSfx.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 67e02ce93df480f4eb6d62b9c623dd95, type: 3}
+    - target: {fileID: 1442055625879373192, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
+      propertyPath: 'SubirPasajeroSfx.Array.data[1]'
+      value: 
+      objectReference: {fileID: 8300000, guid: b51913013b363fd4bb68bac0200b4854, type: 3}
+    - target: {fileID: 1442055625879373192, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
+      propertyPath: 'SubirPasajeroSfx.Array.data[2]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 8e4acd0d59c3bf44e8d3dd77b6bbe1ee, type: 3}
     - target: {fileID: 4379872304844063547, guid: 6ee1690c89ca4774fa7521139feecd97, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.4
@@ -1083,6 +1099,7 @@ GameObject:
   - component: {fileID: 1450423313}
   - component: {fileID: 1450423312}
   - component: {fileID: 1450423311}
+  - component: {fileID: 1450423314}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -1111,6 +1128,18 @@ MonoBehaviour:
   azulSprite: {fileID: -647152212, guid: 8adcb4ebb43b1934dbfbe38713234972, type: 3}
   verdeSprite: {fileID: 858231506, guid: 8adcb4ebb43b1934dbfbe38713234972, type: 3}
   amarilloSprite: {fileID: -1005412995, guid: 8adcb4ebb43b1934dbfbe38713234972, type: 3}
+  ClipsBajada:
+  - {fileID: 8300000, guid: 77ef20ffa48816e4dba7eb935afb2d73, type: 3}
+  - {fileID: 8300000, guid: 2313b389d5b63c445b1f659e0dbdba94, type: 3}
+  - {fileID: 8300000, guid: 664a569b8eef0674a90cbcfe2eef647e, type: 3}
+  - {fileID: 8300000, guid: de50d51fd12d11e489c71703942c673c, type: 3}
+  - {fileID: 8300000, guid: 8dfd09b7cbad84f47843ddd9c0982e88, type: 3}
+  - {fileID: 8300000, guid: 3c3c61dacb5439548a493fe1ca19918e, type: 3}
+  - {fileID: 8300000, guid: e5dce31caa1bc614d82f6fcedc6e1218, type: 3}
+  rojoSfx: {fileID: 8300000, guid: 25820c03b88413646a20a90457b361a4, type: 3}
+  azulSfx: {fileID: 8300000, guid: 88e8483534ca1d84ba84519ad570311a, type: 3}
+  verdeSfx: {fileID: 8300000, guid: 2b7b1bfa24d57e74c827aa55c8934e74, type: 3}
+  amarilloSfx: {fileID: 8300000, guid: b72a2caca39ad1345912ab1a41815f8e, type: 3}
 --- !u!4 &1450423310
 Transform:
   m_ObjectHideFlags: 0
@@ -1334,10 +1363,105 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
   musicSource: {fileID: 1450423312}
   sfxSource: {fileID: 1450423311}
-  playlistMusica:
-  - {fileID: 8300000, guid: 85a7c5e2debb4b544a3da265d2a99cae, type: 3}
-  - {fileID: 8300000, guid: 15d3a3c91b92dc04ebdf623fc07ac59e, type: 3}
-  - {fileID: 8300000, guid: b36fb9b46fed9404ab8b6c473905e05d, type: 3}
+  frenoSource: {fileID: 1450423314}
+  playlistMusica: []
+--- !u!82 &1450423314
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1450423308}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &1675126807
 GameObject:
   m_ObjectHideFlags: 0
